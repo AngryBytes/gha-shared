@@ -1,0 +1,125 @@
+# Performs simple dependency upgrades automatically. Creates (or updates) a PR,
+# and enables automerging.
+
+name: upgrade-dependencies
+
+on:
+  workflow_call:
+    inputs:
+
+      # For PHP.
+      php_version:
+        type: string
+        required: false
+        default: '8.0'
+      composer_dirs:
+        type: string
+        required: false
+
+      # For Node.js.
+      node_version:
+        type: string
+        required: false
+        default: '16'
+      yarn_dirs:
+        type: string
+        required: false
+
+    secrets:
+
+      RINUS_GITHUB_TOKEN:
+        required: true
+
+      # For PHP.
+      COMPOSER_AUTH:
+        required: false
+
+jobs:
+
+  upgrade-deps:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # For PHP.
+      - name: Setup PHP
+        if: inputs.composer_dirs != ''
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ inputs.php_version }}
+          tools: composer:v2
+
+      - name: Get composer cache directory
+        if: inputs.composer_dirs != ''
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer dependencies
+        if: inputs.composer_dirs != ''
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+
+      - name: Upgrade composer dependencies
+        if: inputs.composer_dirs != ''
+        run: |
+          for dir in ${{ inputs.composer_dirs }}; do
+            echo "::group::Composer in $dir"
+            (cd $dir && rm composer.lock && composer install --prefer-dist)
+            echo "::endgroup::"
+          done
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+
+      # For Node.js.
+      - name: Setup Node.js
+        if: inputs.yarn_dirs != ''
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      - name: Get yarn cache directory
+        if: inputs.yarn_dirs != ''
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache yarn dependencies
+        if: inputs.yarn_dirs != ''
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Upgrade yarn dependencies
+        if: inputs.yarn_dirs != ''
+        run: |
+          for dir in ${{ inputs.yarn_dirs }}; do
+            echo "::group::Yarn in $dir"
+            (cd $dir && rm yarn.lock && yarn)
+            echo "::endgroup::"
+          done
+
+      # Create the PR using the separate token.
+      - name: Create PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.RINUS_GITHUB_TOKEN }}
+          author: 'Rinus <info@angrybytes.com>'
+          committer: 'Rinus <info@angrybytes.com>'
+          commit-message: "Update dependencies"
+          title: "Update dependencies"
+          branch: "auto/update-deps"
+
+      - name: Enable automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          token: ${{ secrets.RINUS_GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
