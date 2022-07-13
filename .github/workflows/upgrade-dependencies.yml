@@ -110,6 +110,8 @@ jobs:
             (cd $dir && rm yarn.lock && yarn)
             echo "::endgroup::"
           done
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
 
       # Create the PR using the separate token.
       - name: Create PR
