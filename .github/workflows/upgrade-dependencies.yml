@@ -105,12 +105,17 @@ jobs:
       - name: Upgrade yarn dependencies
         if: inputs.yarn_dirs != ''
         run: |
+          if [ -n "$AB_YARNRC" ]; then
+            echo "$AB_YARNRC" > "$HOME/.yarnrc.yml"
+          fi
           for dir in ${{ inputs.yarn_dirs }}; do
             echo "::group::Yarn in $dir"
             (cd $dir && rm yarn.lock && yarn)
             echo "::endgroup::"
           done
+          rm -f "$HOME/.yarnrc.yml"
         env:
+          AB_YARNRC: ${{ secrets.AB_YARNRC }}
           YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
 
       # Create the PR using the separate token.
