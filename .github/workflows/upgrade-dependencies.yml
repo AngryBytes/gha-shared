@@ -29,6 +29,15 @@ on:
         type: string
         required: false
 
+      # For Rust
+      rust_version:
+        type: string
+        required: false
+        default: 'stable'
+      cargo_dirs:
+        type: string
+        required: false
+
     secrets:
 
       RINUS_GITHUB_TOKEN:
@@ -117,6 +126,35 @@ jobs:
         env:
           AB_YARNRC: ${{ secrets.AB_YARNRC }}
           YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+
+      # For Rust.
+      - name: Setup Rust
+        if: inputs.cargo_dirs != ''
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ inputs.rust_version }}
+          profile: minimal
+          default: true
+
+      - name: Cache cargo
+        if: inputs.cargo_dirs != ''
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Upgrade cargo dependencies
+        if: inputs.cargo_dirs != ''
+        run: |
+          for dir in ${{ inputs.cargo_dirs }}; do
+            echo "::group::Cargo in $dir"
+            (cd $dir && cargo update)
+            echo "::endgroup::"
+          done
 
       # Create the PR using the separate token.
       - name: Create PR
