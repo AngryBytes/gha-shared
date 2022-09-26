@@ -174,3 +174,4 @@ jobs:
         with:
           token: ${{ secrets.RINUS_GITHUB_TOKEN }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+        continue-on-error: true
