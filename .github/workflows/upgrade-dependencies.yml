@@ -16,6 +16,9 @@ on:
         type: string
         required: false
         default: '8.0'
+      php_extensions:
+        type: string
+        required: false
       composer_dirs:
         type: string
         required: false
@@ -67,6 +70,7 @@ jobs:
         with:
           php-version: ${{ inputs.php_version }}
           tools: composer:v2
+          extensions: ${{ inputs.php_extensions }}
 
       - name: Get composer cache directory
         if: inputs.composer_dirs != ''
