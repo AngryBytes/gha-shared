@@ -19,6 +19,11 @@ on:
       php_extensions:
         type: string
         required: false
+        # NOTE: This default is here because Symfony 5 allows mixing Symfony 6
+        # dependencies, but symfony/amqp-messenger has an ext-amqp dependency
+        # in Symfony 6. Not having that extension installed prevents Composer
+        # from upgrading this package.
+        default: ':amqp'
       composer_dirs:
         type: string
         required: false
