@@ -55,6 +55,11 @@ on:
         type: string
         required: false
 
+      # For Nix flakes
+      flake_dirs:
+        type: string
+        required: false
+
     secrets:
 
       RINUS_GITHUB_TOKEN:
@@ -208,6 +213,22 @@ jobs:
           done
         env:
           TARGET_DIRS: ${{ inputs.go_dirs }}
+
+      # For Nix.
+      - name: Setup Nix
+        if: inputs.flake_dirs != ''
+        uses: cachix/install-nix-action@v19
+
+      - name: Upgrade Nix flake inputs
+        if: inputs.flake_dirs != ''
+        run: |
+          for dir in $TARGET_DIRS; do
+            echo "::group::Flake in $dir"
+            (cd $dir && nix flake update)
+            echo "::endgroup::"
+          done
+        env:
+          TARGET_DIRS: ${{ inputs.flake_dirs }}
 
       # Create the PR using the separate token.
       - name: Create PR
