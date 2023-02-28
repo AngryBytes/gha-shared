@@ -102,12 +102,13 @@ jobs:
       - name: Upgrade composer dependencies
         if: inputs.composer_dirs != ''
         run: |
-          for dir in ${{ inputs.composer_dirs }}; do
+          for dir in $TARGET_DIRS; do
             echo "::group::Composer in $dir"
             (cd $dir && rm composer.lock && composer install --prefer-dist)
             echo "::endgroup::"
           done
         env:
+          TARGET_DIRS: ${{ inputs.composer_dirs }}
           COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
       # For Node.js.
@@ -137,13 +138,14 @@ jobs:
           if [ -n "$AB_YARNRC" ]; then
             echo "$AB_YARNRC" > "$HOME/.yarnrc.yml"
           fi
-          for dir in ${{ inputs.yarn_dirs }}; do
+          for dir in $TARGET_DIRS; do
             echo "::group::Yarn in $dir"
             (cd $dir && rm yarn.lock && yarn)
             echo "::endgroup::"
           done
           rm -f "$HOME/.yarnrc.yml"
         env:
+          TARGET_DIRS: ${{ inputs.yarn_dirs }}
           AB_YARNRC: ${{ secrets.AB_YARNRC }}
           YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
 
@@ -170,11 +172,13 @@ jobs:
       - name: Upgrade cargo dependencies
         if: inputs.cargo_dirs != ''
         run: |
-          for dir in ${{ inputs.cargo_dirs }}; do
+          for dir in $TARGET_DIRS; do
             echo "::group::Cargo in $dir"
             (cd $dir && cargo update)
             echo "::endgroup::"
           done
+        env:
+          TARGET_DIRS: ${{ inputs.cargo_dirs }}
 
       # For Go.
       - name: Setup Go
@@ -197,11 +201,13 @@ jobs:
       - name: Upgrade Go dependencies
         if: inputs.go_dirs != ''
         run: |
-          for dir in ${{ inputs.go_dirs }}; do
+          for dir in $TARGET_DIRS; do
             echo "::group::Go module in $dir"
             (cd $dir && go get -u -t && go mod tidy)
             echo "::endgroup::"
           done
+        env:
+          TARGET_DIRS: ${{ inputs.go_dirs }}
 
       # Create the PR using the separate token.
       - name: Create PR
