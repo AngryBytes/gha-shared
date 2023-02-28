@@ -46,6 +46,15 @@ on:
         type: string
         required: false
 
+      # For Go
+      go_version:
+        type: string
+        required: false
+        default: 'stable'
+      go_dirs:
+        type: string
+        required: false
+
     secrets:
 
       RINUS_GITHUB_TOKEN:
@@ -164,6 +173,33 @@ jobs:
           for dir in ${{ inputs.cargo_dirs }}; do
             echo "::group::Cargo in $dir"
             (cd $dir && cargo update)
+            echo "::endgroup::"
+          done
+
+      # For Go.
+      - name: Setup Go
+        if: inputs.go_dirs != ''
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ inputs.go_version }}
+
+      - name: Cache Go
+        if: inputs.go_dirs != ''
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Upgrade Go dependencies
+        if: inputs.go_dirs != ''
+        run: |
+          for dir in ${{ inputs.go_dirs }}; do
+            echo "::group::Go module in $dir"
+            (cd $dir && go get -u -t && go mod tidy)
             echo "::endgroup::"
           done
 
