@@ -32,7 +32,7 @@ on:
       node_version:
         type: string
         required: false
-        default: '16'
+        default: '18'
       yarn_dirs:
         type: string
         required: false
