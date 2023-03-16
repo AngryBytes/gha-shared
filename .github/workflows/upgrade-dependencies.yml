@@ -188,7 +188,7 @@ jobs:
       # For Go.
       - name: Setup Go
         if: inputs.go_dirs != ''
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ inputs.go_version }}
 
