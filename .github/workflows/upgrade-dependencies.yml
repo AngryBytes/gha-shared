@@ -144,12 +144,7 @@ jobs:
 
       # For Rust.
       - name: Setup Rust
-        if: inputs.cargo_dirs != ''
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ inputs.rust_version }}
-          profile: minimal
-          default: true
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo
         if: inputs.cargo_dirs != ''
