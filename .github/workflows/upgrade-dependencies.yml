@@ -188,20 +188,10 @@ jobs:
       # For Go.
       - name: Setup Go
         if: inputs.go_dirs != ''
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ inputs.go_version }}
-
-      - name: Cache Go
-        if: inputs.go_dirs != ''
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
+          cache-dependency-path: '**/go.sum'
 
       - name: Upgrade Go dependencies
         if: inputs.go_dirs != ''
