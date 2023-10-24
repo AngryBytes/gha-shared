@@ -119,7 +119,7 @@ jobs:
       # For Node.js.
       - name: Setup Node.js
         if: inputs.yarn_dirs != ''
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
           cache: yarn
