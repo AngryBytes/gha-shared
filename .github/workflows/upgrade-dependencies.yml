@@ -125,6 +125,10 @@ jobs:
           cache: yarn
           cache-dependency-path: '**/yarn.lock'
 
+      - name: Enable corepack
+        if: inputs.yarn_dirs != ''
+        run: corepack enable
+
       - name: Upgrade yarn dependencies
         if: inputs.yarn_dirs != ''
         run: |
