@@ -98,7 +98,7 @@ jobs:
 
       - name: Cache composer dependencies
         if: inputs.composer_dirs != ''
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -152,7 +152,7 @@ jobs:
 
       - name: Cache cargo
         if: inputs.cargo_dirs != ''
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
