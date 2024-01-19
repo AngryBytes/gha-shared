@@ -117,6 +117,10 @@ jobs:
           COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
 
       # For Node.js.
+      - name: Enable corepack
+        if: inputs.yarn_dirs != ''
+        run: corepack enable
+
       - name: Setup Node.js
         if: inputs.yarn_dirs != ''
         uses: actions/setup-node@v4
@@ -124,10 +128,6 @@ jobs:
           node-version: ${{ inputs.node_version }}
           cache: yarn
           cache-dependency-path: '**/yarn.lock'
-
-      - name: Enable corepack
-        if: inputs.yarn_dirs != ''
-        run: corepack enable
 
       - name: Upgrade yarn dependencies
         if: inputs.yarn_dirs != ''
