@@ -148,6 +148,7 @@ jobs:
 
       # For Rust.
       - name: Setup Rust
+        if: inputs.cargo_dirs != ''
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo
