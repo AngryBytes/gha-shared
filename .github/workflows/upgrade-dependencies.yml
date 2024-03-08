@@ -195,7 +195,7 @@ jobs:
       # For Nix.
       - name: Setup Nix
         if: inputs.flake_dirs != ''
-        uses: cachix/install-nix-action@v25
+        uses: cachix/install-nix-action@v26
 
       - name: Upgrade Nix flake inputs
         if: inputs.flake_dirs != ''
