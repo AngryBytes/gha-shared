@@ -195,7 +195,9 @@ jobs:
       # For Nix.
       - name: Setup Nix
         if: inputs.flake_dirs != ''
-        uses: cachix/install-nix-action@v26
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          github-token: ${{ secrets.RINUS_GITHUB_TOKEN }}
 
       - name: Upgrade Nix flake inputs
         if: inputs.flake_dirs != ''
