@@ -213,7 +213,7 @@ jobs:
       # Create the PR using the separate token.
       - name: Create PR
         id: cpr
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.RINUS_GITHUB_TOKEN }}
           author: 'Rinus <info@angrybytes.com>'
