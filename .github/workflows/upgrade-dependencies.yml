@@ -132,6 +132,9 @@ jobs:
       - name: Upgrade yarn dependencies
         if: inputs.yarn_dirs != ''
         run: |
+          if [ -n "$AB_NPMRC" ]; then
+            echo "$AB_NPMRC" > "$HOME/.npmrc"
+          fi
           if [ -n "$AB_YARNRC" ]; then
             echo "$AB_YARNRC" > "$HOME/.yarnrc.yml"
           fi
@@ -143,6 +146,7 @@ jobs:
           rm -f "$HOME/.yarnrc.yml"
         env:
           TARGET_DIRS: ${{ inputs.yarn_dirs }}
+          AB_NPMRC: ${{ secrets.AB_NPMRC }}
           AB_YARNRC: ${{ secrets.AB_YARNRC }}
           YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
 
