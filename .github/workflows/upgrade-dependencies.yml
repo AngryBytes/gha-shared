@@ -180,7 +180,7 @@ jobs:
       # For Go.
       - name: Setup Go
         if: inputs.go_dirs != ''
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.go_version }}
           cache-dependency-path: '**/go.sum'
