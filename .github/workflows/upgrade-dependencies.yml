@@ -73,6 +73,7 @@ jobs:
 
   upgrade-deps:
     runs-on: ubuntu-latest
+    if: "${{ false }}"  # DISABLED
     steps:
 
       - name: Checkout
